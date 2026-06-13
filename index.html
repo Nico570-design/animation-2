@@ -470,6 +470,26 @@ window.addEventListener('message', (e) => {
     resetAnimation();
   }
 });
+  // Écoute les messages du parent (Framer)
+window.addEventListener('message', (e) => {
+  if (e.data === 'organize' || e.data?.type === 'organize') {
+    organizeAnimation();
+  }
+  if (e.data === 'reset' || e.data?.type === 'reset') {
+    resetAnimation();
+  }
+});
+// Essaie aussi de trouver le bouton Framer parent et l'écouter directement
+setTimeout(() => {
+  try {
+    const btn = window.parent.document.querySelector('button')
+    if (btn && btn.textContent.includes('Organiser')) {
+      btn.addEventListener('click', () => organizeAnimation())
+    }
+  } catch (e) {
+    console.log('Cannot access parent button (cross-origin)')
+  }
+}, 500)
 </script>
 </body>
 </html>
