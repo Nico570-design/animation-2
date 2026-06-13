@@ -120,7 +120,64 @@ html,body{
 .pt[data-c="orange"] .pt-tag{background:rgba(255,103,36,.1);color:#CC5020}
 .pt[data-c="green"]  .pt-tag{background:rgba(36,124,25,.1);color:#1A6014}
 
-/* Bouton supprimé — contrôlé via postMessage depuis Framer */
+/* ── ORGANIZE BUTTON ── */
+#organize-area{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  z-index:10;display:flex;align-items:center;
+  transition:opacity .5s ease,transform .5s ease;
+}
+
+.organize-btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+  padding:12px 22px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FAFAFA 100%);
+  color:#1A1208;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:8px;
+  cursor:pointer;
+  letter-spacing:-.01em;
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.9) inset,
+    0 1px 2px rgba(0,0,0,.04),
+    0 4px 16px rgba(0,0,0,.06),
+    0 12px 32px rgba(0,0,0,.05);
+  transition:transform .2s ease,box-shadow .25s ease,background .2s ease;
+}
+.organize-btn::before{
+  content:'';position:absolute;top:0;left:-60%;
+  width:50%;height:100%;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);
+  transform:skewX(-20deg);
+  transition:left .6s ease;
+  pointer-events:none;
+}
+.organize-btn:hover::before{left:130%}
+.organize-btn:hover{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F5F5F5 100%);
+  transform:translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.9) inset,
+    0 2px 4px rgba(0,0,0,.06),
+    0 8px 24px rgba(0,0,0,.08),
+    0 20px 40px rgba(0,0,0,.06);
+}
+.organize-btn:active{transform:translateY(0)}
+.org-icon{
+  font-size:15px;display:inline-block;color:#037887;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  animation:org-icon-twinkle 2.2s ease-in-out infinite;
+  transform-origin:center;
+}
+@keyframes org-icon-twinkle{
+  0%,100%{transform:rotate(0deg) scale(1);filter:drop-shadow(0 0 0 rgba(3,120,135,0))}
+  25%{transform:rotate(90deg) scale(1.15);filter:drop-shadow(0 0 6px rgba(3,120,135,.55))}
+  50%{transform:rotate(180deg) scale(1);filter:drop-shadow(0 0 2px rgba(3,120,135,.2))}
+  75%{transform:rotate(270deg) scale(1.15);filter:drop-shadow(0 0 6px rgba(3,120,135,.55))}
+}
+.organize-btn:hover .org-icon{animation-play-state:paused;transform:rotate(180deg) scale(1.1)}
 
 /* ── BOOK MOCKUP ── */
 #book-mockup{
@@ -157,6 +214,13 @@ html,body{
 
 <div id="stage">
   <div id="postits-container"></div>
+
+  <!-- Organize button -->
+  <div id="organize-area">
+    <button class="organize-btn" id="organize-btn">
+      <span class="org-icon">✦</span>&nbsp;Organiser
+    </button>
+  </div>
 
   <!-- Book mockup -->
   <div id="book-mockup">
@@ -460,7 +524,12 @@ function resetAnimation() {
 }
 
 /* ══════════════════════════════════════
-   POSTMESSAGE — Framer sends commands here
+   BUTTON LISTENER
+══════════════════════════════════════ */
+document.getElementById('organize-btn').addEventListener('click', organizeAnimation);
+
+/* ══════════════════════════════════════
+   POSTMESSAGE — Framer can also send commands here
 ══════════════════════════════════════ */
 window.addEventListener('message', (e) => {
   if (e.data === 'organize' || e.data?.type === 'organize') {
@@ -470,26 +539,6 @@ window.addEventListener('message', (e) => {
     resetAnimation();
   }
 });
-  // Écoute les messages du parent (Framer)
-window.addEventListener('message', (e) => {
-  if (e.data === 'organize' || e.data?.type === 'organize') {
-    organizeAnimation();
-  }
-  if (e.data === 'reset' || e.data?.type === 'reset') {
-    resetAnimation();
-  }
-});
-// Essaie aussi de trouver le bouton Framer parent et l'écouter directement
-setTimeout(() => {
-  try {
-    const btn = window.parent.document.querySelector('button')
-    if (btn && btn.textContent.includes('Organiser')) {
-      btn.addEventListener('click', () => organizeAnimation())
-    }
-  } catch (e) {
-    console.log('Cannot access parent button (cross-origin)')
-  }
-}, 500)
 </script>
 </body>
 </html>
