@@ -126,6 +126,11 @@ html,body{
   z-index:10;display:flex;align-items:center;
   transition:opacity .5s ease,transform .5s ease;
 }
+#organize-area.hide{
+  opacity:0;
+  pointer-events:none;
+  transform:translateX(-50%) translateY(12px);
+}
 
 .organize-btn{
   display:inline-flex;align-items:center;gap:9px;
@@ -206,7 +211,7 @@ html,body{
 /* Responsive */
 @media (max-width:760px){
   .book-img{width:90%}
-  .pt{transform:scale(.85)}
+  .pt{transform:scale(.70)}
 }
 </style>
 </head>
@@ -409,6 +414,9 @@ async function organizeAnimation() {
   organized = true;
   stopFloat();
 
+  // Hide the organize button
+  document.getElementById('organize-area').classList.add('hide');
+
   // freeze cards at current visual position & disable drag
   ptEls.forEach((el, i) => {
     const r = el.getBoundingClientRect();
@@ -503,6 +511,9 @@ function resetAnimation() {
   organized = false;
   const book = document.getElementById('book3d');
   book.classList.remove('entering','floating');
+
+  // Show the organize button again
+  document.getElementById('organize-area').classList.remove('hide');
 
   ptEls.forEach((el, i) => {
     el.style.transition = 'none';
